@@ -2,12 +2,16 @@ from random import randrange as rnd, choice
 import tkinter as tk
 import math
 import time
+
 # print (dir(math))
+
 root = tk.Tk()
 fr = tk.Frame(root)
 root.geometry('800x600')
 canv = tk.Canvas(root, bg='white')
 canv.pack(fill=tk.BOTH, expand=1)
+
+
 class ball():
     def __init__(self, x=40, y=450):
         """ Конструктор класса ball
@@ -30,6 +34,7 @@ class ball():
         )
         self.live = 30
         self.boo = True
+
     def set_coords(self):
         canv.coords(
                 self.id,
@@ -38,6 +43,7 @@ class ball():
                 self.x + self.r,
                 self.y + self.r
         )
+
     def move(self):
         """Переместить мяч по прошествии единицы времени.
         Метод описывает перемещение мяча за один кадр перерисовки. То есть, обновляет значения
@@ -52,6 +58,7 @@ class ball():
                 self.vy = - self.vy
         else:
             self.boo = True
+
         self.vy -= 1
         self.vx = 0.98*self.vx
         self.vy = 0.98*self.vy
@@ -65,14 +72,20 @@ class ball():
                 self.y + self.r,
                 fill=self.color
         )
+
     def hittest(self, obj):
+
         if (self.x - obj.x) ** 2 + (self.y - obj.y) ** 2 <= (obj.r + self.r) ** 2:
             return True
         else:
             return False
+
+
 class gun():
+
     def fire2_start(self, event):
         self.f2_on = 1
+
     def fire2_end(self, event):
         """Выстрел мячом.
         Происходит при отпускании кнопки мыши.
@@ -88,14 +101,15 @@ class gun():
         balls += [new_ball]
         self.f2_on = 0
         self.f2_power = 10
+
     def targetting(self, event=0):
         """Прицеливание. Зависит от положения мыши."""
         if event:
+            self.an = math.atan((event.y-450) / (event.x-20))
             if event.x == 20:
                 self.an = math.atan((event.y-450) / (event.x-21))
             else:
                 self.an = math.atan((event.y-450) / (event.x-20))
-
         if self.f2_on:
             canv.itemconfig(self.id, fill='orange')
         else:
@@ -104,6 +118,7 @@ class gun():
                     20 + max(self.f2_power, 20) * math.cos(self.an),
                     450 + max(self.f2_power, 20) * math.sin(self.an)
                     )
+
     def power_up(self):
         if self.f2_on:
             if self.f2_power < 100:
@@ -111,7 +126,10 @@ class gun():
             canv.itemconfig(self.id, fill='orange')
         else:
             canv.itemconfig(self.id, fill='black')
+
+
 class target():
+
     def new_target(self):
         """ Инициализация новой цели. """
         x = self.x = rnd(600, 780)
@@ -120,25 +138,31 @@ class target():
         color = self.color = 'red'
         canv.coords(self.id, x-r, y-r, x+r, y+r)
         canv.itemconfig(self.id, fill=color)
+
     def hit(self, points=1):
         """Попадание шарика в цель."""
         canv.coords(self.id, -10, -10, -10, -10)
         self.points += points
         canv.itemconfig(self.id_points, text=self.points)
+
+
 t1 = target()
 t1.points = 0
 t1.live = 1
 t1.id = canv.create_oval(0,0,0,0)
 t1.id_points = canv.create_text(30,30,text = t1.points,font = '28')
 t1.new_target()
+
 screen1 = canv.create_text(400, 300, text='', font='28')
 g1 = gun()
 bullet = 0
 balls = []
+
 g1.f2_power = 10
 g1.f2_on = 0
 g1.an = 1
 g1.id = canv.create_line(20,450,50,420,width=7)
+
 def new_game(event=''):
     global screen1, balls, bullet, gun, t1
     t1.new_target()
@@ -147,7 +171,9 @@ def new_game(event=''):
     canv.bind('<Button-1>', g1.fire2_start)
     canv.bind('<ButtonRelease-1>', g1.fire2_end)
     canv.bind('<Motion>', g1.targetting)
+
     z = 0.03
+
     while t1.live or balls:
         for b in balls:
             b.move()
@@ -164,5 +190,7 @@ def new_game(event=''):
     canv.itemconfig(screen1, text='')
     canv.delete(gun)
     root.after(750, new_game)
+
 new_game()
+
 mainloop()

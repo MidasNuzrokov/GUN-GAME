@@ -107,7 +107,7 @@ class gun():
         if event:
             self.an = math.atan((event.y-450) / (event.x-20))
             if event.x == 20:
-                self.an = math.atan((event.y-450) / (event.x-21))
+                self.an = math.atan((event.y-450) / (event.x-22))
             else:
                 self.an = math.atan((event.y-450) / (event.x-20))
         if self.f2_on:
